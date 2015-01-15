@@ -1,0 +1,10 @@
+<h1>Update shifts</h1>
+<% if notice %>
+  <p id="notice"><%= notice %></p>
+<% end %>
+
+<br><br>
+<%= form_tag parse_path, class: "form" do %>
+  <%= text_area_tag :raw_schedule %>
+  <%= submit_tag "Parse" %>
+<% end %>

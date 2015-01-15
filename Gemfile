@@ -38,3 +38,6 @@ gem 'spring',        group: :development
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
+#fixes 4k limitation for session store
+gem 'activerecord-session_store', github: 'rails/activerecord-session_store'
+
