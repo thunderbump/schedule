@@ -22,41 +22,83 @@ class UpdateController < ApplicationController
   #Shift Name in D[3n] n in [0-6]
   #Shift Start in D[3n+1] n in [0-6]
   #Shift End in D[3n+1] n in [0-6]
+  JANUARY = 1
+  DECEMBER = 12
+
+  HEADER = 0
+  #  WEEK_HEADER = 1
+  DATE_HEADER_INITIAL = 1
+  DATE_HEADER_MOD = 14
+  RAW_DATE_HEADER_OFFSET = 2
+  DATE_HEADER_OFFSET = 1
+  PARSE_HEADER = 0
+
+  LOCATION_BLK = 0
+  MONTH_BLK = 1
+  YEAR_BLK = 2
+  DATE_BLK = 0
+  DATE_BLK_MOD = 3
+  NAME_BLK = 0
+  TIME_BLK = 1
+  SHIFT_FIELDS = 3
+  MAX_SHIFT_COLS = 7
+  SHIFT_ROWS = 14
+  DATE_CHECK_INIT = 1
   def parse_exec(raw_sched)
     raw_ary = raw_sched.split("\n")
-    location = ""
-    year, month, date_init = 0
+    date_check = DATE_CHECK_INIT
+    date_offset = 0
+
+    #Parse the header
+    header_ary = raw_ary[HEADER].split(' ')
+    location = header_ary[LOCATION_BLK]
+    month = Date::MONTHNAMES.index(header_ary[MONTH_BLK])
+    year = header_ary[YEAR_BLK].to_i
+
+    #now line up the weeks end-to-end to get it out of excell's stupid formatting
+    parse_ary = Array.new(DATE_HEADER_MOD) {Array.new}
     raw_ary.each_with_index do |line, index|
-      #idx 0 you're only working with the first block so split by ' ' instead of \t
-      if index == 0
-        ln_ary = line.split(' ')
-        location = ln_ary[0]
-        month = Date::MONTHNAMES.index(ln_ary[1])
-        year = ln_ary[2].to_i
+      line_ary = line.split("\t")
+      if index < RAW_DATE_HEADER_OFFSET
         next
-      end
-      ln_ary = line.split('\t')
-      #see if it's a date line and make sure it's not using anything from last month
-      #treat the first differently to reflect this
-      #date_init will be the first date of the line and be used to incriment later.
-      if index == 2
-        ln_ary.each_with_index do |block, blk_idx|
-          if blk_idx % 3 == 0
-            if block.split('-').first.to_i == 1
-              date_init = blk_idx / 3 + 1
-            end
-          end
-        end
-      #if it's not the first then just take the first in the array and pull the date
-      elsif (index - 2) % 14 == 0
-        #----------------------------------------------------
-        #this is including the last line if it starts on a different month. This should be checked for and
-        #excluded
-        #----------------------------------------------------
-        date_init = ln_ary.first.split('-').first.to_i
+      elsif (index - RAW_DATE_HEADER_OFFSET) % DATE_HEADER_MOD == PARSE_HEADER
+        parse_ary[PARSE_HEADER].concat line_ary[0, SHIFT_FIELDS * MAX_SHIFT_COLS]
+      else
+        parse_ary[(index - RAW_DATE_HEADER_OFFSET) % DATE_HEADER_MOD].concat line_ary[0, SHIFT_FIELDS * MAX_SHIFT_COLS]
       end
     end
-    sched = raw_sched.gsub("\t", "!t").gsub("\n", "!B!")
-    return location.inspect + ' ' + month.inspect + ' ' + year.inspect + ' ' + date_init.inspect
+    name_ary = Array.new
+    shift_ary = Array.new
+    #Step through the dates and pick out people and shifts
+    (parse_ary.length / SHIFT_FIELDS).times do |index|
+      #strip out this index's date
+      shift_date = parse_ary[HEADER][index * SHIFT_FIELDS].split('-')[DATE_BLK].to_i
+      shift_month = month
+      #if we're not in the current month
+      if shift_date != date_check
+        #date_check not set so still before the current month.
+        if date_check == DATE_CHECK_INIT
+          shift_month = JANUARY ? DECEMBER : month + 1
+        #date_check set so after
+        else
+          shift_month = DECEMBER ? JANUARY : month + 1
+        end
+      #otherwise we're in this month. Prep it for the next iteration
+      else
+        date_check += 1
+      end
+
+      parse_ary.last(SHIFT_ROWS - 1).each do |line|
+        name = line[index * SHIFT_FIELDS + NAME_BLK]
+        start, finish = line[index * SHIFT_FIELDS + TIME_BLK].split('-')
+        unless name_ary.include? name
+          name_ary.append name
+        end
+        shift_ary.append [name_ary.index, start, finish]
+      end
+    end
+
+#    return location.inspect + ' ' + month.inspect + ' ' + year.inspect + ' ' + name_ary.inspect
+    return parse_ary.inspect
   end
 end
