@@ -44,6 +44,7 @@ class UpdateController < ApplicationController
   MAX_SHIFT_COLS = 7
   SHIFT_ROWS = 14
   DATE_CHECK_INIT = 1
+  COMBINED_SHIFT_COLS = 42
   def parse_exec(raw_sched)
     raw_ary = raw_sched.split("\n")
     date_check = DATE_CHECK_INIT
@@ -70,35 +71,60 @@ class UpdateController < ApplicationController
     name_ary = Array.new
     shift_ary = Array.new
     #Step through the dates and pick out people and shifts
-    (parse_ary.length / SHIFT_FIELDS).times do |index|
+    COMBINED_SHIFT_COLS.times do |index|
       #strip out this index's date
-      shift_date = parse_ary[HEADER][index * SHIFT_FIELDS].split('-')[DATE_BLK].to_i
+      shift_day = parse_ary[HEADER][index * SHIFT_FIELDS].split('-')[DATE_BLK].to_i
       shift_month = month
+      shift_year = year
       #if we're not in the current month
-      if shift_date != date_check
+      if shift_day != date_check
         #date_check not set so still before the current month.
         if date_check == DATE_CHECK_INIT
-          shift_month = JANUARY ? DECEMBER : month + 1
+          if shift_month == JANUARY
+            shift_month = DECEMBER
+            shift_year -= 1
+          else
+            shift_month = month -= 1
+          end
         #date_check set so after
         else
-          shift_month = DECEMBER ? JANUARY : month + 1
+          if shift_month == DECEMBER
+            shift_month = JANUARY
+            shift_year += 1
+          else
+            shift_month = month += 1
+          end
         end
-      #otherwise we're in this month. Prep it for the next iteration
+        #otherwise we're in this month. Prep it for the next iteration
       else
         date_check += 1
       end
 
       parse_ary.last(SHIFT_ROWS - 1).each do |line|
         name = line[index * SHIFT_FIELDS + NAME_BLK]
-        start, finish = line[index * SHIFT_FIELDS + TIME_BLK].split('-')
+        if name == "" or name == nil
+          next
+        end
+        #byebug
+        start_time, end_time = line[index * SHIFT_FIELDS + TIME_BLK].split('-')
         unless name_ary.include? name
           name_ary.append name
         end
-        shift_ary.append [name_ary.index, start, finish]
+        start = DateTime.new(shift_year, shift_month, shift_day, start_time[0,2].to_i, start_time[2,4].to_i, 0)
+        if start_time > end_time
+          #byebug
+          delta = end_time.to_i - start_time.to_i + 2400
+          end_datetime = start + (delta / 100).hours + (delta % 100).minutes
+        else
+          end_datetime = DateTime.new(shift_year, shift_month, shift_day, end_time[0,2].to_i, end_time[2,4].to_i, 0)
+        end
+
+        shift_ary.append [name, name_ary.index(name), start, end_datetime]
+
       end
     end
 
-#    return location.inspect + ' ' + month.inspect + ' ' + year.inspect + ' ' + name_ary.inspect
-    return parse_ary.inspect
+    #    return location.inspect + ' ' + month.inspect + ' ' + year.inspect + ' ' + name_ary.inspect
+    return shift_ary.inspect + " " + shift_ary.length.to_s
   end
 end

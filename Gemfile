@@ -41,3 +41,6 @@ gem 'spring',        group: :development
 #fixes 4k limitation for session store
 gem 'activerecord-session_store', github: 'rails/activerecord-session_store'
 
+#debug
+gem 'byebug', group: :development
+
