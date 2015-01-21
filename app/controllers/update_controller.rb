@@ -68,7 +68,8 @@ class UpdateController < ApplicationController
         parse_ary[(index - RAW_DATE_HEADER_OFFSET) % DATE_HEADER_MOD].concat line_ary[0, SHIFT_FIELDS * MAX_SHIFT_COLS]
       end
     end
-    name_ary = Array.new
+    name_ary = Person.all
+    Shift.delete_all(['location = ?', location])
     shift_ary = Array.new
     #Step through the dates and pick out people and shifts
     COMBINED_SHIFT_COLS.times do |index|
@@ -107,9 +108,15 @@ class UpdateController < ApplicationController
         end
         #byebug
         start_time, end_time = line[index * SHIFT_FIELDS + TIME_BLK].split('-')
-        unless name_ary.include? name
-          name_ary.append name
+        unless name_ary.find { |n| n.name == name }
+          person = Person.new(name: name)
+          person.save
+          name_ary.append person
+          
         end
+        #unless name_ary.include? name
+        #  name_ary.append name
+        #end
         start = DateTime.new(shift_year, shift_month, shift_day, start_time[0,2].to_i, start_time[2,4].to_i, 0)
         if start_time > end_time
           #byebug
@@ -118,8 +125,11 @@ class UpdateController < ApplicationController
         else
           end_datetime = DateTime.new(shift_year, shift_month, shift_day, end_time[0,2].to_i, end_time[2,4].to_i, 0)
         end
-
-        shift_ary.append [name, name_ary.index(name), start, end_datetime]
+        shift = Shift.new(person: name_ary.find { |n| n.name == name }, location: location, start: start, end: end_datetime)
+        shift.save
+        shift_ary.append shift
+        #shift_ary.append [name, name_ary.find { |n| n.name == name }, start, end_datetime]
+        #shift_ary.append [name, name_ary.index(name), start, end_datetime]
 
       end
     end
