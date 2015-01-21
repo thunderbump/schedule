@@ -25,3 +25,41 @@
     <% end %>
   </tbody>
 </table>
+
+<table>
+  <thead>
+  </thead>
+  <tbody>
+  <% @days.each do |day| %>
+    <tr>
+      <% day.each do |shift| %>
+        <td><%= shift[0].person.name %></td>
+      <% end %>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+
+<table style="width: 100%; border-collapse: collapse;">
+  <thead>
+  </thead>
+  <tbody>
+  <% @days.each do |day| %>
+    <tr><td colspan=49>
+        <%= day.first[0].end.at_beginning_of_day.to_formatted_s(:long_ordinal) %>
+    </td></tr>
+      <% day.each do |shift| %>
+        <tr>
+          <td width="5%"><%= shift[0].person.name %></td>
+          <% unless shift[1] == 0 %><td bgcolor="#95a5a6" style="border-bottom: 1pt solid white;" colspan=<%= shift[1] %>></td><% end %>
+          <td bgcolor="#3498db" style="border-bottom: 1pt solid white;" colspan=<%= shift[2] %>>
+            <div style="float: left" align="left"><%= '%02d' % shift[0].start.hour + '%02d' % shift[0].start.min.to_s %></div>
+            <div align="right"><%= '%02d' % shift[0].end.hour + '%02d' % shift[0].end.min.to_s %></div>
+          </td>
+          <% unless shift[3] == 0 %><td bgcolor="#95a5a6" style="border-bottom: 1pt solid white;" colspan=<%= shift[3] %>></td><% end %>
+        </tr>
+      <% end %>
+  <% end %>
+  </tbody>
+</table>

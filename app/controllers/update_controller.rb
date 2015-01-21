@@ -85,7 +85,7 @@ class UpdateController < ApplicationController
             shift_month = DECEMBER
             shift_year -= 1
           else
-            shift_month = month -= 1
+            shift_month = month - 1
           end
         #date_check set so after
         else
@@ -93,7 +93,7 @@ class UpdateController < ApplicationController
             shift_month = JANUARY
             shift_year += 1
           else
-            shift_month = month += 1
+            shift_month = month + 1
           end
         end
         #otherwise we're in this month. Prep it for the next iteration

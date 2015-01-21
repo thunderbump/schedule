@@ -4,7 +4,28 @@ class ShiftsController < ApplicationController
   # GET /shifts
   # GET /shifts.json
   def index
-    @shifts = Shift.all
+    @shifts = Shift.all.sort_by { |s| s.start }
+    @days = Array.new
+    beginning = @shifts[0].start.at_beginning_of_day
+    ending = @shifts[0].start.at_end_of_day
+    while beginning <= @shifts.last.end
+      pre_colspans = Shift.where(['(start > ? AND start < ?) OR (end > ? AND end < ?)', beginning, ending, beginning, ending])
+      day_prep = Array.new
+      pre_colspans.each do |shift|
+        before = shift.start < beginning ? 0 : shift.start.hour * 2 + shift.start.min / 30
+        during_start = shift.start < beginning ? beginning : shift.start
+        during_end = shift.end > ending ? ending : shift.end
+        #subtracting datetimes results in difference in seconds. divide by 60 to get minutes then 30 to get # half hours which is
+        #the size our table cells represent -> divide by 1800
+        during = (during_end.to_time - during_start.to_time) / 1800
+        after = shift.end > ending ? 0 : (ending - shift.end) / 1800
+        day_prep.append([shift, before.round, during.round, after.round])
+      end
+      @days.append(day_prep)
+      beginning += 1.days
+      ending += 1.days
+    end
+
   end
 
   # GET /shifts/1
