@@ -1,51 +1,95 @@
 <h1>Listing shifts</h1>
 
 <table>
-  <thead>
-    <tr>
-      <th>Start</th>
-      <th>End</th>
-      <th>Person</th>
-      <th>Loc</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
+<thead>
+<tr>
+<th>Start</th>
+<th>End</th>
+<th>Person</th>
+<th>Loc</th>
+<th colspan="3"></th>
+</tr>
+</thead>
 
-  <tbody>
-    <% @shifts.each do |shift| %>
+<tbody>
+<% @shifts.each do |shift| %>
+  <tr>
+  <td><%= shift.start %></td>
+  <td><%= shift.end %></td>
+  <td><%= shift.person.name %></td>
+  <td><%= shift.location %></td>
+  <td><%= link_to 'Show', shift %></td>
+  <td><%= link_to 'Edit', edit_shift_path(shift) %></td>
+  <td><%= link_to 'Destroy', shift, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</tbody>
+</table>
+
+
+<!--
+  Shift table. 
+
+  Shift times shift left when the shift ends on the next day and end times shift right when shifts
+begin on the previous day
+-->
+<% @days.each do |day| %>
+  <div id="d<%= day.first[0].id %>" onclick='toggle_day(<%= day.first[0].id %>)' class="schedule_day">
+    <%= day.first[0].end.at_beginning_of_day.to_formatted_s(:long_ordinal) %>
+  </div>
+  <div id="t<%= day.first[0].id %>">
+  <table class="schedule">
+  <% day.each do |shift| %>
       <tr>
-        <td><%= shift.start %></td>
-        <td><%= shift.end %></td>
-        <td><%= shift.person.name %></td>
-        <td><%= shift.location %></td>
-        <td><%= link_to 'Show', shift %></td>
-        <td><%= link_to 'Edit', edit_shift_path(shift) %></td>
-        <td><%= link_to 'Destroy', shift, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+      <!--
+        Name
 
+      -->
+      <td class="schedule_name" colspan=3><%= shift[0].person.name %></td>
+      <!--
+        pre-shift bar
 
-<table style="width: 100%; border-collapse: collapse;">
-  <thead>
-  </thead>
-  <tbody>
-  <% @days.each do |day| %>
-    <tr><td bgcolor="#7f8c8d" colspan=49>
-        <%= day.first[0].end.at_beginning_of_day.to_formatted_s(:long_ordinal) %>
-    </td></tr>
-      <% day.each do |shift| %>
-        <tr>
-          <td bgcolor="#ececec" width="5%"><%= shift[0].person.name %></td>
-          <% unless shift[1] == 0 %><td bgcolor="#bdc3c7" style="border-bottom: 1pt solid white;" colspan=<%= shift[1] %>></td><% end %>
-          <td bgcolor="#22a7f0" style="border-bottom: 1pt solid white;" colspan=<%= shift[2] %>>
-            <div style="float: left" align="left" width="0%"><%= '%02d' % shift[0].start.hour + '%02d' % shift[0].start.min.to_s %></div>
-            <div align="right" width="0%"><%= '%02d' % shift[0].end.hour + '%02d' % shift[0].end.min.to_s %></div>
-          </td>
-          <% unless shift[3] == 0 %><td bgcolor="#bdc3c7" style="border-bottom: 1pt solid white;" colspan=<%= shift[3] %>></td><% end %>
-        </tr>
+      -->
+      <% unless shift[1] == 0 %>
+        <td class="schedule_off" colspan=<%= shift[1] %>>
+          <% if shift[3] == 0 %>
+            <div align="right">
+              <%= '%02d' % shift[0].start.hour + '%02d' % shift[0].start.min %>
+            </div>
+          <% end %>
+        </td>
       <% end %>
+      <!--
+        Shift bar
+
+      -->
+      <td class="schedule_on" colspan=<%= shift[2] %>>
+        <% if shift[3] != 0 %>
+          <div style="float: left" align="left" width="0%">
+            <%= '%02d' % shift[0].start.hour + '%02d' % shift[0].start.min.to_s %>
+          </div>
+        <% end %>
+        <% if shift[1] != 0 %>
+          <div style="" align="right" width="0%">
+            <%= '%02d' % shift[0].end.hour + '%02d' % shift[0].end.min.to_s %>
+          </div>
+        <% end %>
+      </td>
+      <!--
+      post-shift bar
+
+      -->
+      <% unless shift[3] == 0 %>
+        <td class="schedule_off" colspan=<%= shift[3] %>>
+          <% if shift[1] == 0 %>
+            <div align=left%>
+              <%= '%02d' % shift[0].end.hour + '%02d' % shift[0].end.min.to_s %>
+            </div>
+          <% end %>
+        </td>
+      <% end %>
+    </tr>
   <% end %>
-  </tbody>
 </table>
+</div>
+<% end %>

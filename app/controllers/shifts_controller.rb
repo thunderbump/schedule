@@ -15,8 +15,8 @@ class ShiftsController < ApplicationController
         before = shift.start < beginning ? 0 : shift.start.hour * 2 + shift.start.min / 30
         during_start = shift.start < beginning ? beginning : shift.start
         during_end = shift.end > ending ? ending : shift.end
-        #subtracting datetimes results in difference in seconds. divide by 60 to get minutes then 30 to get # half hours which is
-        #the size our table cells represent -> divide by 1800
+        #subtracting datetimes results in difference in seconds. divide by 60 to get minutes then 30 
+        #to get # half hours which is the size our table cells represent -> divide by 1800
         during = (during_end.to_time - during_start.to_time) / 1800
         after = shift.end > ending ? 0 : (ending - shift.end) / 1800
         day_prep.append([shift, before.round, during.round, after.round])

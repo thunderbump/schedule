@@ -1,3 +1,27 @@
 // Place all the styles related to the shifts controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.schedule_day {
+  color: #fff;
+  background-color: #7f8c8d;
+  width: 100%;
+}
+.schedule {
+  width: 100%; 
+  border-collapse: collapse;  
+  table-layout: fixed;
+
+  .schedule_name {
+    background-color: #ececec;
+  }
+  .schedule_off {
+    background-color: #bdc3c7;
+    border-bottom: 1pt solid #fff;
+  }
+  .schedule_on {
+    background-color: #22a7f0;
+    border-bottom: 1pt solid #fff;
+  }
+}
+
