@@ -6,6 +6,7 @@ class ShiftsController < ApplicationController
   def index
     @shifts = Shift.all.sort_by { |s| s.start }
     @days = Array.new
+    @names = Person.all.sort_by { |n| n.name }
     beginning = @shifts[0].start.at_beginning_of_day
     ending = @shifts[0].start.at_end_of_day
     while beginning <= @shifts.last.end

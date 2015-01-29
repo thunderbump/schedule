@@ -2,6 +2,16 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+#edit_raw_shifts {
+  width: 100%;
+  color: #fff;
+  background-color: #7f8c8d;
+}
+
+#raw_shifts {
+  display: none;
+}
+
 .schedule_day {
   color: #fff;
   background-color: #7f8c8d;
@@ -25,3 +35,19 @@
   }
 }
 
+#menu {
+  position: fixed;
+  top: 5px;
+  right: 10px;
+  color: #fff;
+  background-color: #7f8c8d;
+}
+
+#menu_drop {
+  position: fixed;
+  top: 22px;
+  right: 10px;
+  color: #fff;
+  background-color: #7f8c8d;
+  display: none;
+}

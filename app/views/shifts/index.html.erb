@@ -1,5 +1,10 @@
 <h1>Listing shifts</h1>
 
+<div id="edit_raw_shifts">
+Edit Shift Entries
+</div>
+
+<div id="raw_shifts">
 <table>
 <thead>
 <tr>
@@ -25,6 +30,7 @@
 <% end %>
 </tbody>
 </table>
+</div>
 
 
 <!--
@@ -37,15 +43,15 @@ begin on the previous day
   <div id="d<%= day.first[0].id %>" onclick='toggle_day(<%= day.first[0].id %>)' class="schedule_day">
     <%= day.first[0].end.at_beginning_of_day.to_formatted_s(:long_ordinal) %>
   </div>
-  <div id="t<%= day.first[0].id %>">
+  <div id="t<%= day.first[0].id %>" class="day_table">
   <table class="schedule">
   <% day.each do |shift| %>
-      <tr>
+    <tr class="schedule_row <%= shift[0].person.name %>">
       <!--
         Name
 
       -->
-      <td class="schedule_name" colspan=3><%= shift[0].person.name %></td>
+      <td class="schedule_name" colspan=3 onclick="toggle_names('<%= shift[0].person.name %>')"><%= shift[0].person.name %></td>
       <!--
         pre-shift bar
 
@@ -93,3 +99,16 @@ begin on the previous day
 </table>
 </div>
 <% end %>
+
+<div id="menu"><div id="menu_text" onclick="show_all_names()">Menu</div>
+<div id="menu_drop">
+  <table>
+    <% @names.each do |person| %>
+      <tr onclick='toggle_names("<%= person.name %>")'><td>
+        <%= person.name %>
+      </td></tr>
+    <% end %>
+  </table>
+</div>
+</div>
+
