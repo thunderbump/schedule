@@ -51,7 +51,7 @@ begin on the previous day
         Name
 
       -->
-      <td class="schedule_name" colspan=3 onclick="toggle_names('<%= shift[0].person.name %>')"><%= shift[0].person.name %></td>
+      <td class="schedule_name" colspan=3><%= link_to shift[0].person.name, shift[0].person %></td>
       <!--
         pre-shift bar
 

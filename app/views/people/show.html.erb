@@ -5,5 +5,11 @@
   <%= @person.name %>
 </p>
 
+<% @shifts.each do |shift| %>
+  <%= shift.start.wday %><br>
+<% end %>
+
+<%= @weeks.inspect %>
+
 <%= link_to 'Edit', edit_person_path(@person) %> |
 <%= link_to 'Back', people_path %>
