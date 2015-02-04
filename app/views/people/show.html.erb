@@ -1,15 +1,71 @@
 <p id="notice"><%= notice %></p>
 
 <p>
-  <strong>Name:</strong>
-  <%= @person.name %>
+<strong>Name:</strong>
+<%= @person.name %>
 </p>
 
-<% @shifts.each do |shift| %>
-  <%= shift.start.wday %><br>
+<br><br><br>
+<% @weeks.each do |week| %>
+  <table id="w<%= week[0][0].start.strftime("%U").to_i %>" class="schedule">
+    <tr><td colspan=50 class=schedule_day>Calendar week <%= week[0][0].start.strftime("%U").to_i %></td></tr>
+    <% index = 0 %>
+    <% week.each do |day| %>
+      <% while index < day[0].start.wday do %>
+        <tr><td colspan=2><%= Date::ABBR_DAYNAMES[index] %></td><td colspan=48 class="schedule_off"></td></tr>
+        <% index += 1 %>
+      <% end %>
+      <tr>
+        <td colspan=2><%= day[0].start.strftime("%a") %></td>
+        <% if day[2] != 0 %>
+          <td colspan=<%= day[2] %> class="schedule_off">
+            <% if day[3] < 3 %>
+              <div style="float: right"><%= day[0].start.strftime("%H:%M") %></div>
+            <% end %>
+          </td>
+        <% end %>
+        <% if day[3] != 0 %>
+          <td colspan=<%= day[3] %> class="schedule_on">
+            <% if day[3] >= 3 and !day[2].zero? %>
+              <div style="float: left"><%= day[0].start.strftime("%H:%M") %></div>
+            <% end %>
+            <% if (day[3] >= 3 and !day[4].zero?) or day[0].end == day[0].end.beginning_of_day %>
+              <div style="float: right"><%= day[0].end.strftime("%H:%M") %></div>
+            <% end %>
+          </td>
+        <% end %>
+        <% if day[4] != 0 %>
+          <td colspan=<%= day[4] %> class="schedule_off">
+            <% if day[3] < 3 %>
+              <div style="float: left"><%= day[0].end.strftime("%H:%M") %></div>
+            <% end %>
+                 <% if day[5] < 3 and !day[1].nil? %>
+                   <div style="float: right"><%= day[1].start.strftime("%H:%M") %></div>
+                 <% end %>
+          </td>
+        <% end %>
+        <% if day[5] != 0 %>
+          <td colspan=<%= day[5] %> class="schedule_on">
+            <% if day[5] >= 3 and !day[4].zero? %>
+              <div style="float: left"><%= day[1].start.strftime("%H:%M") %></div>
+            <% end %>
+            <% if ((day[5] >= 3 or day[6] < 3) and !day[6].zero?) or day[1].end == day[1].end.beginning_of_day %>
+              <div style="float: right"><%= day[1].end.strftime("%H:%M") %></div>
+            <% end %>
+          </td>
+        <% end %>
+        <% if day[6] != 0 %>
+          <td colspan=<%= day[6] %> class="schedule_off">
+            <% if day[5] < 3 and day[6] >= 3%>
+              <div style="float: left"><%= day[1].end.strftime("%H:%M") %></div>
+            <% end %>
+          </td>
+        <% end %>
+        <% index += 1 %>
+      </tr>
+    <% end %>
+  </table>
 <% end %>
-
-<%= @weeks.inspect %>
 
 <%= link_to 'Edit', edit_person_path(@person) %> |
 <%= link_to 'Back', people_path %>
