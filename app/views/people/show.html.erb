@@ -64,6 +64,11 @@
         <% index += 1 %>
       </tr>
     <% end %>
+    <% while index <= 6 do %>
+      <tr><td colspan=2><%= Date::ABBR_DAYNAMES[index] %></td><td colspan=48 class="schedule_off"></td></tr>
+      <% index += 1 %>
+    <% end %>
+
   </table>
 <% end %>
 
