@@ -5,7 +5,15 @@
 <%= @person.name %>
 </p>
 
-<br><br><br>
+<div class="calendar_nav">
+  <div id="earth">
+    e
+  </div>
+  <div id="sun">
+    s
+  </div>
+</div>
+
 <% @weeks.each do |week| %>
   <table id="w<%= week[0][0].start.strftime("%U").to_i %>" class="schedule">
     <tr><td colspan=50 class=schedule_day>Calendar week <%= week[0][0].start.strftime("%U").to_i %></td></tr>

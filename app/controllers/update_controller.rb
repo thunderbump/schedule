@@ -68,8 +68,11 @@ class UpdateController < ApplicationController
         parse_ary[(index - RAW_DATE_HEADER_OFFSET) % DATE_HEADER_MOD].concat line_ary[0, SHIFT_FIELDS * MAX_SHIFT_COLS]
       end
     end
+    
     name_ary = Person.all
-    Shift.delete_all(['location = ?', location])
+    Shift.delete_all(['location = ? AND start > ? AND start < ?', location, 
+                      DateTime.strptime(parse_ary[0][0], "%e-%b"),
+                      DateTime.strptime(parse_ary[0][-3], "%e-%b").end_of_day])
     shift_ary = Array.new
     #Step through the dates and pick out people and shifts
     COMBINED_SHIFT_COLS.times do |index|

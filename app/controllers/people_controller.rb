@@ -98,30 +98,22 @@ class PeopleController < ApplicationController
       end
     end
     #init working_weeks
-    working_weeks = [[[shifts[0]]]]
-    if shifts[0].start.strftime("%U").to_i != shifts[0].end.strftime("%U").to_i or
-      shifts[0].start.wday != shifts[0].end.wday
-      #check for which it is because you have to append different things to different places.
-      if shifts[0].start.strftime("%U").to_i != shifts[0].end.strftime("%U").to_i
-        #duplicate the current shift and add it
-        working_weeks.append [[shifts[0].dup]]
-        #then set the dup's start and the original's end so you know what day it is later.
-        working_weeks[0][0][0].end = working_weeks[0][0][0].start.end_of_day
-        working_weeks[-1][-1][-1].start = working_weeks[-1][-1][-1].end.beginning_of_day
-      elsif shifts[0].start.wday != shifts[0].end.wday
-        working_weeks[0].append [shifts[0].dup]
-        working_weeks[0][0][0].end = working_weeks[0][0][0].start.end_of_day
-        working_weeks[-1][-1][-1].start = working_weeks[-1][-1][-1].end.beginning_of_day
-      end
-    end
-
-
+    working_weeks = [[[shifts[0].dup]]]
 
     shifts.each_with_index do |shift, idx|
-      if idx == 0 
-        next
-      end
 
+      #account for the init without checking for splitting days/months
+      if idx == 0 
+        if shift.start.strftime("%U") != shift.end.strftime("%U") or
+           shift.start.wday != shift.end.wday
+
+          working_weeks[0][0][0].end = working_weeks[0][0][0].start.end_of_day
+          shift.start = shift.end.beginning_of_day
+        else
+          next
+        end
+      end
+      #split days/months up if they occur during a shift
       if shift.start.strftime("%U") != shift.end.strftime("%U") or
         shift.start.wday != shift.end.wday
 
@@ -137,6 +129,7 @@ class PeopleController < ApplicationController
 
     end
 
+    #build the colspan part of the array after the shift objects.
     working_weeks.each do |week|
       week.each do |day|
         if day.length > 2
@@ -163,6 +156,7 @@ class PeopleController < ApplicationController
       end
     end
 
+    #fix the boundry condition allowance made at the beginning.
     shifts.each do |shift|
       if shift.end + 1.minutes == (shift.end + 1.minutes).beginning_of_day
         shift.end += 1.minutes
