@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150115042037) do
+ActiveRecord::Schema.define(version: 20150208020804) do
 
   create_table "people", force: true do |t|
     t.string   "name"
@@ -36,6 +36,7 @@ ActiveRecord::Schema.define(version: 20150115042037) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "location"
+    t.string   "shiftmod",   default: ""
   end
 
   add_index "shifts", ["person_id"], name: "index_shifts_on_person_id"

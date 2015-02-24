@@ -1,9 +1,11 @@
 class UpdateController < ApplicationController
+
   def update
   end
 
   def parse
-    errno = parse_exec params[:raw_schedule]
+    parser = ShiftParser.new(params[:raw_schedule])
+    errno = parser.test
     redirect_to update_path, notice: errno
   end
 
