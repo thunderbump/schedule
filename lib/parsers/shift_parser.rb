@@ -39,6 +39,14 @@ class ShiftParser
     parse
   end
 
+  def to_s
+    shifts = ""
+    @shifts.each do |shift|
+      shifts << "#{shift.to_s}\n"
+    end
+    return shifts
+  end
+
   def test
 #    return @segmented_doc.inspect
 #    return @facility.inspect
@@ -120,7 +128,7 @@ class ShiftParser
         finish += 1.days
       end
 
-      shifts.append Shift.new(person: person, location: @facility, start: start, end: finish, shiftmod: mod)
+      shifts.append Shift.new(person: person, location: @facility, start: start, finish: finish, shiftmod: mod)
       shifts[-1].save
     end
     return shifts

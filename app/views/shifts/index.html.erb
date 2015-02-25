@@ -20,7 +20,7 @@ Edit Shift Entries
 <% @shifts.each do |shift| %>
   <tr>
   <td><%= shift.start %></td>
-  <td><%= shift.end %></td>
+  <td><%= shift.finish %></td>
   <td><%= shift.person.name %></td>
   <td><%= shift.location %></td>
   <td><%= link_to 'Show', shift %></td>
@@ -41,7 +41,7 @@ begin on the previous day
 -->
 <% @days.each do |day| %>
   <div id="d<%= day.first[0].id %>" onclick='toggle_day(<%= day.first[0].id %>)' class="schedule_day">
-    <%= day.first[0].end.at_beginning_of_day.to_formatted_s(:long_ordinal) %>
+    <%= day.first[0].finish.at_beginning_of_day.to_formatted_s(:long_ordinal) %>
   </div>
   <div id="t<%= day.first[0].id %>" class="day_table">
   <table class="schedule">
@@ -77,7 +77,7 @@ begin on the previous day
         <% end %>
         <% if shift[1] != 0 %>
           <div style="" align="right" width="0%">
-            <%= '%02d' % shift[0].end.hour + '%02d' % shift[0].end.min.to_s %>
+            <%= '%02d' % shift[0].finish.hour + '%02d' % shift[0].finish.min.to_s %>
           </div>
         <% end %>
       </td>
@@ -89,7 +89,7 @@ begin on the previous day
         <td class="schedule_off" colspan=<%= shift[3] %>>
           <% if shift[1] == 0 %>
             <div align=left%>
-              <%= '%02d' % shift[0].end.hour + '%02d' % shift[0].end.min.to_s %>
+              <%= '%02d' % shift[0].finish.hour + '%02d' % shift[0].finish.min.to_s %>
             </div>
           <% end %>
         </td>
