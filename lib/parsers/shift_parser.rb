@@ -211,7 +211,7 @@ class ShiftParser
 
   #returns the facility this schedule's for
   def find_facility(header)
-    header[FACILITY]
+    header[FACILITY].downcase
   end
 
   def find_authoritative_month(header)

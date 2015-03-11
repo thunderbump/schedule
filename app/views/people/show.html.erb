@@ -37,15 +37,15 @@
             <% if day[3] >= 3 and !day[2].zero? %>
               <div style="float: left"><%= day[0].start.strftime("%H:%M") %></div>
             <% end %>
-            <% if (day[3] >= 3 and !day[4].zero?) or day[0].end == day[0].end.beginning_of_day %>
-              <div style="float: right"><%= day[0].end.strftime("%H:%M") %></div>
+            <% if (day[3] >= 3 and !day[4].zero?) or day[0].finish == day[0].finish.beginning_of_day %>
+              <div style="float: right"><%= day[0].finish.strftime("%H:%M") %></div>
             <% end %>
           </td>
         <% end %>
         <% if day[4] != 0 %>
           <td colspan=<%= day[4] %> class="schedule_off">
             <% if day[3] < 3 %>
-              <div style="float: left"><%= day[0].end.strftime("%H:%M") %></div>
+              <div style="float: left"><%= day[0].finish.strftime("%H:%M") %></div>
             <% end %>
                  <% if day[5] < 3 and !day[1].nil? %>
                    <div style="float: right"><%= day[1].start.strftime("%H:%M") %></div>
@@ -57,15 +57,15 @@
             <% if day[5] >= 3 and !day[4].zero? %>
               <div style="float: left"><%= day[1].start.strftime("%H:%M") %></div>
             <% end %>
-            <% if ((day[5] >= 3 or day[6] < 3) and !day[6].zero?) or day[1].end == day[1].end.beginning_of_day %>
-              <div style="float: right"><%= day[1].end.strftime("%H:%M") %></div>
+            <% if ((day[5] >= 3 or day[6] < 3) and !day[6].zero?) or day[1].finish == day[1].finish.beginning_of_day %>
+              <div style="float: right"><%= day[1].finish.strftime("%H:%M") %></div>
             <% end %>
           </td>
         <% end %>
         <% if day[6] != 0 %>
           <td colspan=<%= day[6] %> class="schedule_off">
             <% if day[5] < 3 and day[6] >= 3%>
-              <div style="float: left"><%= day[1].end.strftime("%H:%M") %></div>
+              <div style="float: left"><%= day[1].finish.strftime("%H:%M") %></div>
             <% end %>
           </td>
         <% end %>

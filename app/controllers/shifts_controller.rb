@@ -3,6 +3,11 @@ class ShiftsController < ApplicationController
 
   # GET /shifts
   # GET /shifts.json
+  #
+  # Redo this. It should group shifts into days but pass no colspan data.
+  # Let the view go through each shift and test if each half hr increment
+  # is inside the current shift. Lack of colspans will help later when 
+  # there's more to test as well(set lunches?, new start/finish?).
   def index
     @shifts = Shift.all.sort_by { |s| s.start }
     @days = Array.new
@@ -10,7 +15,7 @@ class ShiftsController < ApplicationController
     beginning = @shifts[0].start.at_beginning_of_day
     ending = @shifts[0].start.at_end_of_day
     while beginning <= @shifts.last.finish
-      pre_colspans = Shift.where(['(start > ? AND start < ?) OR (finish > ? AND finish < ?)', beginning, ending, beginning, ending])
+      pre_colspans = Shift.where(['(start > ? AND start < ?) OR (finish > ? AND finish < ?)', beginning, ending, beginning, ending]).sort_by { |s| s.start }
       day_prep = Array.new
       pre_colspans.each do |shift|
         before = shift.start < beginning ? 0 : shift.start.hour * 2 + shift.start.min / 30

@@ -69,7 +69,7 @@ begin on the previous day
         Shift bar
 
       -->
-      <td class="schedule_on" colspan=<%= shift[2] %>>
+      <td class="<%= shift[0].location %>" colspan=<%= shift[2] %>>
         <% if shift[3] != 0 %>
           <div style="float: left" align="left" width="0%">
             <%= '%02d' % shift[0].start.hour + '%02d' % shift[0].start.min.to_s %>

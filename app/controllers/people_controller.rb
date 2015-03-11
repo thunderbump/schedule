@@ -93,8 +93,8 @@ class PeopleController < ApplicationController
     #Shifts that end on midnight are a boundry condition. remove them and the math works.
     #put them back in at the very end
     shifts.each do |shift|
-      if shift.end == shift.end.beginning_of_day
-        shift.end -= 1.minutes
+      if shift.finish == shift.finish.beginning_of_day
+        shift.finish -= 1.minutes
       end
     end
     #init working_weeks
@@ -104,24 +104,24 @@ class PeopleController < ApplicationController
 
       #account for the init without checking for splitting days/months
       if idx == 0 
-        if shift.start.strftime("%U") != shift.end.strftime("%U") or
-           shift.start.wday != shift.end.wday
+        if shift.start.strftime("%U") != shift.finish.strftime("%U") or
+           shift.start.wday != shift.finish.wday
 
-          working_weeks[0][0][0].end = working_weeks[0][0][0].start.end_of_day
-          shift.start = shift.end.beginning_of_day
+          working_weeks[0][0][0].finish = working_weeks[0][0][0].start.end_of_day
+          shift.start = shift.finish.beginning_of_day
         else
           next
         end
       end
       #split days/months up if they occur during a shift
-      if shift.start.strftime("%U") != shift.end.strftime("%U") or
-        shift.start.wday != shift.end.wday
+      if shift.start.strftime("%U") != shift.finish.strftime("%U") or
+        shift.start.wday != shift.finish.wday
 
         first_bit = shift.dup
-        first_bit.end = first_bit.start.end_of_day
+        first_bit.finish = first_bit.start.end_of_day
         append_shift first_bit, working_weeks
 
-        shift.start = shift.end.beginning_of_day
+        shift.start = shift.finish.beginning_of_day
         append_shift shift, working_weeks
       else
         append_shift(shift, working_weeks)
@@ -139,27 +139,27 @@ class PeopleController < ApplicationController
         end
 
         day.append day[0].start.hour * 2 + day[0].start.min / 30
-        day.append (day[0].end.hour * 2 + (day[0].end.min + 1) / 30) - 
+        day.append (day[0].finish.hour * 2 + (day[0].finish.min + 1) / 30) - 
                    (day[0].start.hour * 2 + day[0].start.min / 30)
         if day[1].nil?
-          day.append 48 - (day[0].end.hour * 2 + (day[0].end.min + 1) / 30)
+          day.append 48 - (day[0].finish.hour * 2 + (day[0].finish.min + 1) / 30)
           2.times do
             day.append 0
           end
         else 
           day.append (day[1].start.hour * 2 + (day[1].start.min) / 30) -
-                     (day[0].end.hour * 2 + (day[0].end.min + 1) / 30)
-          day.append (day[1].end.hour * 2 + (day[1].end.min + 1) / 30) -
+                     (day[0].finish.hour * 2 + (day[0].finish.min + 1) / 30)
+          day.append (day[1].finish.hour * 2 + (day[1].finish.min + 1) / 30) -
                      (day[1].start.hour * 2 + day[1].start.min / 30)
-          day.append 48 - (day[1].end.hour * 2 + (day[1].end.min + 1) / 30)
+          day.append 48 - (day[1].finish.hour * 2 + (day[1].finish.min + 1) / 30)
         end
       end
     end
 
     #fix the boundry condition allowance made at the beginning.
     shifts.each do |shift|
-      if shift.end + 1.minutes == (shift.end + 1.minutes).beginning_of_day
-        shift.end += 1.minutes
+      if shift.finish + 1.minutes == (shift.finish + 1.minutes).beginning_of_day
+        shift.finish += 1.minutes
       end
     end
 
