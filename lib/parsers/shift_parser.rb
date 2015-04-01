@@ -32,6 +32,8 @@ class ShiftParser
   HOUR_END = 2
   MIN_START = 2
   MIN_END = 4
+  TIME_SIZE = 4
+  SHORTENED_TIME_SIZE = 3
 
   #new_parse
   def initialize(raw_sched)
@@ -120,7 +122,7 @@ class ShiftParser
 
       start_h, start_m = segment_h_m(start_t)
       finish_h, finish_m = segment_h_m(finish_t)
-      
+      #byebug
       start = DateTime.new(@authoritative_year, @authoritative_month, numeric_day, start_h, start_m, 0)
       finish = DateTime.new(@authoritative_year, @authoritative_month, numeric_day, finish_h, finish_m, 0)
 
@@ -182,7 +184,13 @@ class ShiftParser
   end
 
    def segment_h_m(time)
-     return [time[HOUR_START, HOUR_END].to_i, time[MIN_START, MIN_END].to_i]
+     if time.size == TIME_SIZE
+       return [time[HOUR_START, HOUR_END].to_i, time[MIN_START, MIN_END].to_i]
+     elsif time.size == SHORTENED_TIME_SIZE
+       return [time[HOUR_START].to_i, time[MIN_START - 1, MIN_END - 1].to_i]
+     else
+       raise EncodingError
+     end
    end
   
   ####################################################################################

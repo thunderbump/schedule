@@ -40,61 +40,35 @@ Edit Shift Entries
 begin on the previous day
 -->
 <% @days.each do |day| %>
-  <div id="d<%= day.first[0].id %>" onclick='toggle_day(<%= day.first[0].id %>)' class="schedule_day">
-    <%= day.first[0].finish.at_beginning_of_day.to_formatted_s(:long_ordinal) %>
+  <div id="d<%= day.first.id %>" onclick='toggle_day(<%= day.first.id %>)' class="schedule_day">
+    <%= day.get_date.to_formatted_s(:rfc822) + " | " + day.first.start.to_formatted_s(:rfc822) %>
   </div>
-  <div id="t<%= day.first[0].id %>" class="day_table">
+  <div id="t<%= day.first.id %>" class="day_table">
   <table class="schedule">
   <% day.each do |shift| %>
-    <tr class="schedule_row <%= shift[0].person.name %>">
+    <% unless ["SDTC", "FADC", "LWDC"].include?(shift.shiftmod) %>
+    <tr class="schedule_row <%= shift.person.name %>">
       <!--
         Name
 
       -->
-      <td class="schedule_name" colspan=3><%= link_to shift[0].person.name, shift[0].person %></td>
+      <td class="schedule_name" colspan=3><%= link_to shift.person.name, shift.person %></td>
       <!--
-        pre-shift bar
+        Shifts
 
       -->
-      <% unless shift[1] == 0 %>
-        <td class="schedule_off" colspan=<%= shift[1] %>>
-          <% if shift[3] == 0 %>
-            <div align="right">
-              <%= '%02d' % shift[0].start.hour + '%02d' % shift[0].start.min %>
-            </div>
-          <% end %>
-        </td>
-      <% end %>
-      <!--
-        Shift bar
-
-      -->
-      <td class="<%= shift[0].location %>" colspan=<%= shift[2] %>>
-        <% if shift[3] != 0 %>
-          <div style="float: left" align="left" width="0%">
-            <%= '%02d' % shift[0].start.hour + '%02d' % shift[0].start.min.to_s %>
-          </div>
+      <% (0..47).each do |block| %>
+        <td class="
+        <% if shift.time_in_shift?(day.get_date + (30 * block).minutes) %>
+          <%= shift.location + " " + (["VAC", "PER", "SIK", "SICK"].include?(shift.shiftmod) ? shift.shiftmod : "") %>
+        <% else %>
+          schedule_off
         <% end %>
-        <% if shift[1] != 0 %>
-          <div style="" align="right" width="0%">
-            <%= '%02d' % shift[0].finish.hour + '%02d' % shift[0].finish.min.to_s %>
-          </div>
-        <% end %>
-      </td>
-      <!--
-      post-shift bar
-
-      -->
-      <% unless shift[3] == 0 %>
-        <td class="schedule_off" colspan=<%= shift[3] %>>
-          <% if shift[1] == 0 %>
-            <div align=left%>
-              <%= '%02d' % shift[0].finish.hour + '%02d' % shift[0].finish.min.to_s %>
-            </div>
-          <% end %>
-        </td>
+        "></td>
       <% end %>
+
     </tr>
+  <% end %>
   <% end %>
 </table>
 </div>

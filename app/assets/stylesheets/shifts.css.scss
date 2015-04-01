@@ -19,7 +19,8 @@
 }
 .schedule {
   width: 100%; 
-  border-collapse: collapse;  
+  border-collapse: separate;
+  border-spacing: 0px;
   table-layout: fixed;
 
   .schedule_name {
@@ -35,15 +36,53 @@
   }
   .lwdc {
     background-color: #22a7f0;
-    border-bottom: 1pt solid #fff;
+    border-top: 1pt solid #22d3f7;
+    border-left: 1pt solid #90d3f7;
+    border-right: 1pt solid #11537b;
+    border-bottom: 1pt solid #11537b;
+  }
+  .lwdc:hover {
+    background-color: #f7ca18;
+    border-top: 1pt solid #fbe8d6;
+    border-left: 1pt solid #fbe8d6;
+    border-right: 1pt solid #092616;
+    border-bottom: 1pt solid #092616;
   }
   .sdtc {
-    background-color: #f22613;
-    border-bottom: 1pt solid #fff;
+    background-color: #c0392b;
+    border-top: 1pt solid #df9c95;
+    border-left: 1pt solid #df9c95;
+    border-right: 1pt solid #600622;
+    border-bottom: 1pt solid #600622;
+  }
+  .sdtc:hover {
+    background-color: #f7ca18;
+    border-top: 1pt solid #fbe8d6;
+    border-left: 1pt solid #fbe8d6;
+    border-right: 1pt solid #092616;
+    border-bottom: 1pt solid #092616;
   }
   .fadc {
     background-color: #26a65b;
-    border-bottom: 1pt solid #fff;
+    border-top: 1pt solid #92d2ad;
+    border-left: 1pt solid #92d2ad;
+    border-right: 1pt solid #13532d;
+    border-bottom: 1pt solid #13532d;
+  }
+  .fadc:hover {
+    background-color: #f7ca18;
+    border-top: 1pt solid #fbe8d6;
+    border-left: 1pt solid #fbe8d6;
+    border-right: 1pt solid #092616;
+    border-bottom: 1pt solid #092616;
+  }
+  .VAC , .PER , .SIK , .SICK{
+    background-color: #6c7a89;
+    border-top: 1pt solid #b5bcc4;
+    border-left: 1pt solid #b5bcc4;
+    border-right: 1pt solid #363d44;
+    border-bottom: 1pt solid #363d44;
+    
   }
 }
 

@@ -4,35 +4,47 @@ class ShiftsController < ApplicationController
   # GET /shifts
   # GET /shifts.json
   #
-  # Redo this. It should group shifts into days but pass no colspan data.
-  # Let the view go through each shift and test if each half hr increment
-  # is inside the current shift. Lack of colspans will help later when 
-  # there's more to test as well(set lunches?, new start/finish?).
   def index
     @shifts = Shift.all.sort_by { |s| s.start }
     @days = Array.new
     @names = Person.all.sort_by { |n| n.name }
-    beginning = @shifts[0].start.at_beginning_of_day
-    ending = @shifts[0].start.at_end_of_day
-    while beginning <= @shifts.last.finish
-      pre_colspans = Shift.where(['(start > ? AND start < ?) OR (finish > ? AND finish < ?)', beginning, ending, beginning, ending]).sort_by { |s| s.start }
-      day_prep = Array.new
-      pre_colspans.each do |shift|
-        before = shift.start < beginning ? 0 : shift.start.hour * 2 + shift.start.min / 30
-        during_start = shift.start < beginning ? beginning : shift.start
-        during_end = shift.finish > ending ? ending : shift.finish
-        #subtracting datetimes results in difference in seconds. divide by 60 to get minutes then 30 
-        #to get # half hours which is the size our table cells represent -> divide by 1800
-        during = (during_end.to_time - during_start.to_time) / 1800
-        after = shift.finish > ending ? 0 : (ending - shift.finish) / 1800
-        day_prep.append([shift, before.round, during.round, after.round])
-      end
-      @days.append(day_prep)
-      beginning += 1.days
-      ending += 1.days
-    end
 
+    day_idx = Time.now.at_beginning_of_month
+    final_time = Time.now.at_end_of_month
+    while day_idx < Time.now.at_end_of_month
+      @days.append(Day.new(day_idx, @shifts.select { |s| (s.start < day_idx.at_end_of_day) && (s.finish > day_idx) }))
+      day_idx += 1.days
+    end
   end
+
+  # Redo this. It should group shifts into days but pass no colspan data.
+  # Let the view go through each shift and test if each half hr increment
+  # is inside the current shift. Lack of colspans will help later when 
+  # there's more to test as well(set lunches?, new start/finish?).
+#  def index
+#    @shifts = Shift.all.sort_by { |s| s.start }
+#    @days = Array.new
+#    @names = Person.all.sort_by { |n| n.name }
+#    beginning = @shifts[0].start.at_beginning_of_day
+#    ending = @shifts[0].start.at_end_of_day
+#    while beginning <= @shifts.last.finish
+#      pre_colspans = Shift.where(['(start > ? AND start < ?) OR (finish > ? AND finish < ?)', beginning, ending, beginning, ending]).sort_by { |s| s.start }
+#      day_prep = Array.new
+#      pre_colspans.each do |shift|
+#        before = shift.start < beginning ? 0 : shift.start.hour * 2 + shift.start.min / 30
+#        during_start = shift.start < beginning ? beginning : shift.start
+#        during_end = shift.finish > ending ? ending : shift.finish
+#        #subtracting datetimes results in difference in seconds. divide by 60 to get minutes then 30 
+#        #to get # half hours which is the size our table cells represent -> divide by 1800
+#        during = (during_end.to_time - during_start.to_time) / 1800
+#        after = shift.finish > ending ? 0 : (ending - shift.finish) / 1800
+#        day_prep.append([shift, before.round, during.round, after.round])
+#      end
+#      #@days.append(day_prep)
+#      beginning += 1.days
+#      ending += 1.days
+#    end
+#  end
 
   # GET /shifts/1
   # GET /shifts/1.json
