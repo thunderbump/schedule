@@ -3,7 +3,7 @@ require 'forwardable'
 class Day
   include Enumerable
   extend Forwardable
-  def_delegators :@shifts, :each, :<<, :all, :map
+  def_delegators :@shifts, :each, :<<, :all, :map, :select
 
   def initialize(date_init, shift_list)
     @date = date_init
