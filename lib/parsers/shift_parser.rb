@@ -35,6 +35,9 @@ class ShiftParser
   TIME_SIZE = 4
   SHORTENED_TIME_SIZE = 3
 
+  #time stuff
+  TIMEZONE = "Pacific Time (US & Canada)"
+
   #new_parse
   def initialize(raw_sched)
     @raw_text = raw_sched
@@ -123,8 +126,9 @@ class ShiftParser
       start_h, start_m = segment_h_m(start_t)
       finish_h, finish_m = segment_h_m(finish_t)
       #byebug
-      start = DateTime.new(@authoritative_year, @authoritative_month, numeric_day, start_h, start_m, 0)
-      finish = DateTime.new(@authoritative_year, @authoritative_month, numeric_day, finish_h, finish_m, 0)
+      Time.zone = TIMEZONE
+      start = Time.zone.local(@authoritative_year, @authoritative_month, numeric_day, start_h, start_m, 0)
+      finish = Time.zone.local(@authoritative_year, @authoritative_month, numeric_day, finish_h, finish_m, 0)
 
       if start > finish
         finish += 1.days
@@ -137,7 +141,7 @@ class ShiftParser
   end
 
   def clean_month
-    start = DateTime.new(@authoritative_year, @authoritative_month, 1).beginning_of_month
+    start = Time.zone.local(@authoritative_year, @authoritative_month, 1).beginning_of_month
     finish = start.end_of_month
     Shift.delete_all(['location = ? AND start > ? AND start < ?', @facility, start, finish])
   end
@@ -183,15 +187,16 @@ class ShiftParser
     times.split("-")
   end
 
-   def segment_h_m(time)
-     if time.size == TIME_SIZE
-       return [time[HOUR_START, HOUR_END].to_i, time[MIN_START, MIN_END].to_i]
-     elsif time.size == SHORTENED_TIME_SIZE
-       return [time[HOUR_START].to_i, time[MIN_START - 1, MIN_END - 1].to_i]
-     else
-       raise EncodingError
-     end
-   end
+  #Redo this at some point...
+  def segment_h_m(time)
+    if time.size == TIME_SIZE
+      return [time[HOUR_START, HOUR_END].to_i, time[MIN_START, MIN_END].to_i]
+    elsif time.size == SHORTENED_TIME_SIZE
+      return [time[HOUR_START].to_i, time[MIN_START - 1, MIN_END - 1].to_i]
+    else
+      raise EncodingError
+    end
+  end
   
   ####################################################################################
   #Finds

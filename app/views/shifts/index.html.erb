@@ -41,7 +41,7 @@ begin on the previous day
 -->
 <% @days.each do |day| %>
   <div id="d<%= day.first.id %>" onclick='toggle_day(<%= day.first.id %>)' class="schedule_day">
-    <%= day.get_date.to_formatted_s(:rfc822) + " | " + day.first.start.to_formatted_s(:rfc822) %>
+    <%= day.get_date.to_formatted_s(:long_ordinal) %>
   </div>
   <div id="t<%= day.first.id %>" class="day_table">
   <table class="schedule">
@@ -59,8 +59,8 @@ begin on the previous day
       -->
       <% (0..47).each do |block| %>
         <td class="
-        <% if shift.time_in_shift?(day.get_date + (30 * block).minutes) %>
-          <%= shift.location + " " + (["VAC", "PER", "SIK", "SICK"].include?(shift.shiftmod) ? shift.shiftmod : "") %>
+        <% if shift.time_in_shift?(day.get_date + (30 * block + 15).minutes) %>
+          <%= shift.location + " " + (["VAC", "PER", "SIK", "SICK"].include?(shift.shiftmod) ?  "inactive" : "") %>
         <% else %>
           schedule_off
         <% end %>
